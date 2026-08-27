@@ -29,3 +29,14 @@ The supplied Facebook share URL could not be fetched reliably from the web envir
 
 ## Run
 Open `index.html`. For GitHub Pages, upload the project files with `index.html` at repository root. The admin is at `/admin/`.
+
+
+## Gallery upload fix
+In Admin > Gallery, `+ Add Image` now opens the phone's image/file picker.
+- Select an image
+- Preview appears immediately
+- Enter/change title if needed
+- Press Save
+- The demo stores the selected image in browser localStorage as a data URL
+
+This is suitable for the free demo. For a production website, use Firebase Storage or Supabase Storage so images are stored online and available on every device.
