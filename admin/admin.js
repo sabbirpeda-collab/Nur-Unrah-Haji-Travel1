@@ -13,10 +13,61 @@ function renderPackages(d){$("#packageAdmin").innerHTML=d.packages.map((p,i)=>`<
 window.savePackage=(i,btn)=>{const row=btn.closest(".admin-row"),d=data();row.querySelectorAll("[data-k]").forEach(x=>d.packages[i][x.dataset.k]=x.value);save(d);alert("Package saved");renderAll()};
 window.delPackage=i=>{const d=data();d.packages.splice(i,1);save(d);renderAll()};
 $("#addPackage").onclick=()=>{const d=data();d.packages.push({name:"New Package",type:"Umrah",days:"14 Days",price:"৳ 0",tag:"NEW",hotel:"Hotel",desc:"Add package details here."});save(d);renderAll()};
-function renderGallery(d){$("#galleryAdmin").innerHTML=d.gallery.map((g,i)=>`<div class="admin-row"><div><input data-g="title" value="${esc(g.title)}"><input data-g="url" value="${esc(g.url)}"></div><div class="actions"><button class="save" onclick="saveGallery(${i},this)">Save</button><button class="del" onclick="delGallery(${i})">Delete</button></div></div>`).join("")}
-window.saveGallery=(i,b)=>{const d=data(),r=b.closest(".admin-row");r.querySelectorAll("[data-g]").forEach(x=>d.gallery[i][x.dataset.g]=x.value);save(d);renderAll()};
+function renderGallery(d){
+  $("#galleryAdmin").innerHTML=d.gallery.map((g,i)=>`
+    <div class="admin-row gallery-row">
+      <div>
+        <div class="image-preview-wrap">
+          <img class="image-preview" src="${esc(g.url)}" alt="${esc(g.title)}" onerror="this.style.display='none'">
+        </div>
+        <input data-g="title" value="${esc(g.title)}" placeholder="Image title">
+        <input data-g="url" value="${esc(g.url)}" placeholder="Image URL">
+        <input class="file-input" data-file="${i}" type="file" accept="image/*" capture="environment">
+        <small class="muted">Select a photo from your phone. The demo stores it in this browser.</small>
+      </div>
+      <div class="actions">
+        <button class="save" onclick="saveGallery(${i},this)">Save</button>
+        <button class="del" onclick="delGallery(${i})">Delete</button>
+      </div>
+    </div>`).join("");
+
+  document.querySelectorAll(".file-input").forEach(input=>{
+    input.addEventListener("change", function(){
+      const file=this.files && this.files[0];
+      if(!file) return;
+      if(!file.type.startsWith("image/")){ alert("Please select an image file."); this.value=""; return; }
+      if(file.size > 4*1024*1024){
+        alert("For this demo, please choose an image smaller than 4 MB.");
+        this.value="";
+        return;
+      }
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const row=this.closest(".gallery-row");
+        row.querySelector('[data-g="url"]').value=reader.result;
+        const preview=row.querySelector(".image-preview");
+        preview.src=reader.result;
+        preview.style.display="block";
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+}
+window.saveGallery=(i,b)=>{
+  const d=data(),r=b.closest(".gallery-row");
+  r.querySelectorAll("[data-g]").forEach(x=>d.gallery[i][x.dataset.g]=x.value);
+  save(d); alert("Gallery image saved"); renderAll();
+};
 window.delGallery=i=>{const d=data();d.gallery.splice(i,1);save(d);renderAll()};
-$("#addGallery").onclick=()=>{const d=data();d.gallery.push({title:"New Photo",url:"https://images.unsplash.com/photo-1564769625392-651b89c31e2a?auto=format&fit=crop&w=900&q=80"});save(d);renderAll()};
+$("#addGallery").onclick=()=>{
+  const d=data();
+  d.gallery.push({title:"New Photo",url:""});
+  save(d);
+  renderAll();
+  const inputs=document.querySelectorAll(".file-input");
+  const last=inputs[inputs.length-1];
+  if(last) last.click();
+};
 function renderReviews(d){$("#reviewAdmin").innerHTML=d.reviews.map((r,i)=>`<div class="admin-row"><div><input data-r="name" value="${esc(r.name)}"><textarea data-r="text" rows="2">${esc(r.text)}</textarea></div><div class="actions"><button class="save" onclick="saveReview(${i},this)">Save</button><button class="del" onclick="delReview(${i})">Delete</button></div></div>`).join("")}
 window.saveReview=(i,b)=>{const d=data(),r=b.closest(".admin-row");r.querySelectorAll("[data-r]").forEach(x=>d.reviews[i][x.dataset.r]=x.value);save(d);renderAll()};
 window.delReview=i=>{const d=data();d.reviews.splice(i,1);save(d);renderAll()};
