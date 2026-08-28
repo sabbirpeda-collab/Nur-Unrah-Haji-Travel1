@@ -1,77 +1,16 @@
-const defaultData={settings:{name:"NUR Umrah & Hajj Travel",phone:"+880 1XXX-XXXXXX",whatsapp:"+880 1XXX-XXXXXX",email:"info@nurtravel.com",address:"Your office address, Dhaka, Bangladesh",about:"NUR Umrah & Hajj Travel is dedicated to helping pilgrims plan their sacred journey with confidence. We focus on clear package information, practical travel coordination and responsive assistance.",accent:"#d9b25f"},packages:[{name:"Economy Umrah",type:"Umrah",days:"10 Days",price:"৳ 95,000",tag:"BEST VALUE",hotel:"3★ Hotel",desc:"A practical package for budget-conscious pilgrims."},{name:"Standard Umrah",type:"Umrah",days:"14 Days",price:"৳ 125,000",tag:"POPULAR",hotel:"4★ Hotel",desc:"Comfortable accommodation with balanced services."},{name:"Premium Umrah",type:"Umrah",days:"21 Days",price:"৳ 185,000",tag:"PREMIUM",hotel:"5★ Hotel",desc:"Enhanced comfort and dedicated support."},{name:"Economy Hajj",type:"Hajj",days:"30–45 Days",price:"৳ 5,50,000",tag:"ECONOMY",hotel:"AC Hotel",desc:"Value-focused Hajj package with essential services."}],gallery:[{title:"Masjid al-Haram",url:"https://images.unsplash.com/photo-1564769625392-651b89c31e2a?auto=format&fit=crop&w=1200&q=85"}],reviews:[{name:"Pilgrim Review",text:"Alhamdulillah, the journey was smooth and the support was very helpful."}]};
-function data(){return JSON.parse(localStorage.getItem("nurTravelData")||JSON.stringify(defaultData))}
-function save(d){localStorage.setItem("nurTravelData",JSON.stringify(d))}
-const $=s=>document.querySelector(s);
-if(sessionStorage.getItem("nurAdmin")==="1") openApp();
-$("#loginBtn").onclick=()=>{if($("#pass").value==="admin1234"){sessionStorage.setItem("nurAdmin","1");openApp()}else alert("Wrong password")};
-function openApp(){$("#login").classList.add("hidden");$("#app").classList.remove("hidden");renderAll()}
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));$("#"+b.dataset.tab).classList.add("active");$("#pageTitle").textContent=b.textContent.replace(/^[^A-Za-z]+/,"")});
-$("#reset").onclick=()=>{if(confirm("Reset all demo data?")){localStorage.removeItem("nurTravelData");localStorage.removeItem("nurBookings");renderAll()}};
-function renderAll(){const d=data();$("#statPackages").textContent=d.packages.length;$("#statGallery").textContent=d.gallery.length;$("#statReviews").textContent=d.reviews.length;$("#statBookings").textContent=JSON.parse(localStorage.getItem("nurBookings")||"[]").length;renderSettings(d);renderPackages(d);renderGallery(d);renderReviews(d);renderBookings()}
-function renderSettings(d){const f=$("#settingsForm");Object.keys(d.settings).forEach(k=>{if(f[k])f[k].value=d.settings[k]});f.onsubmit=e=>{e.preventDefault();const x=data();for(const k of Object.keys(x.settings))if(f[k])x.settings[k]=f[k].value;save(x);alert("Settings saved");renderAll()}}
-function renderPackages(d){$("#packageAdmin").innerHTML=d.packages.map((p,i)=>`<div class="admin-row"><div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input data-k="name" value="${esc(p.name)}"><select data-k="type"><option ${p.type==="Umrah"?"selected":""}>Umrah</option><option ${p.type==="Hajj"?"selected":""}>Hajj</option></select><input data-k="days" value="${esc(p.days)}"><input data-k="price" value="${esc(p.price)}"><input data-k="tag" value="${esc(p.tag)}"><input data-k="hotel" value="${esc(p.hotel)}"></div><textarea data-k="desc" rows="2">${esc(p.desc)}</textarea></div><div class="actions"><button class="save" onclick="savePackage(${i},this)">Save</button><button class="del" onclick="delPackage(${i})">Delete</button></div></div>`).join("")}
-window.savePackage=(i,btn)=>{const row=btn.closest(".admin-row"),d=data();row.querySelectorAll("[data-k]").forEach(x=>d.packages[i][x.dataset.k]=x.value);save(d);alert("Package saved");renderAll()};
-window.delPackage=i=>{const d=data();d.packages.splice(i,1);save(d);renderAll()};
-$("#addPackage").onclick=()=>{const d=data();d.packages.push({name:"New Package",type:"Umrah",days:"14 Days",price:"৳ 0",tag:"NEW",hotel:"Hotel",desc:"Add package details here."});save(d);renderAll()};
-function renderGallery(d){
-  $("#galleryAdmin").innerHTML=d.gallery.map((g,i)=>`
-    <div class="admin-row gallery-row">
-      <div>
-        <div class="image-preview-wrap">
-          <img class="image-preview" src="${esc(g.url)}" alt="${esc(g.title)}" onerror="this.style.display='none'">
-        </div>
-        <input data-g="title" value="${esc(g.title)}" placeholder="Image title">
-        <input data-g="url" value="${esc(g.url)}" placeholder="Image URL">
-        <input class="file-input" data-file="${i}" type="file" accept="image/*" capture="environment">
-        <small class="muted">Select a photo from your phone. The demo stores it in this browser.</small>
-      </div>
-      <div class="actions">
-        <button class="save" onclick="saveGallery(${i},this)">Save</button>
-        <button class="del" onclick="delGallery(${i})">Delete</button>
-      </div>
-    </div>`).join("");
-
-  document.querySelectorAll(".file-input").forEach(input=>{
-    input.addEventListener("change", function(){
-      const file=this.files && this.files[0];
-      if(!file) return;
-      if(!file.type.startsWith("image/")){ alert("Please select an image file."); this.value=""; return; }
-      if(file.size > 4*1024*1024){
-        alert("For this demo, please choose an image smaller than 4 MB.");
-        this.value="";
-        return;
-      }
-      const reader=new FileReader();
-      reader.onload=()=>{
-        const row=this.closest(".gallery-row");
-        row.querySelector('[data-g="url"]').value=reader.result;
-        const preview=row.querySelector(".image-preview");
-        preview.src=reader.result;
-        preview.style.display="block";
-      };
-      reader.readAsDataURL(file);
-    });
-  });
-}
-window.saveGallery=(i,b)=>{
-  const d=data(),r=b.closest(".gallery-row");
-  r.querySelectorAll("[data-g]").forEach(x=>d.gallery[i][x.dataset.g]=x.value);
-  save(d); alert("Gallery image saved"); renderAll();
-};
-window.delGallery=i=>{const d=data();d.gallery.splice(i,1);save(d);renderAll()};
-$("#addGallery").onclick=()=>{
-  const d=data();
-  d.gallery.push({title:"New Photo",url:""});
-  save(d);
-  renderAll();
-  const inputs=document.querySelectorAll(".file-input");
-  const last=inputs[inputs.length-1];
-  if(last) last.click();
-};
-function renderReviews(d){$("#reviewAdmin").innerHTML=d.reviews.map((r,i)=>`<div class="admin-row"><div><input data-r="name" value="${esc(r.name)}"><textarea data-r="text" rows="2">${esc(r.text)}</textarea></div><div class="actions"><button class="save" onclick="saveReview(${i},this)">Save</button><button class="del" onclick="delReview(${i})">Delete</button></div></div>`).join("")}
-window.saveReview=(i,b)=>{const d=data(),r=b.closest(".admin-row");r.querySelectorAll("[data-r]").forEach(x=>d.reviews[i][x.dataset.r]=x.value);save(d);renderAll()};
-window.delReview=i=>{const d=data();d.reviews.splice(i,1);save(d);renderAll()};
-$("#addReview").onclick=()=>{const d=data();d.reviews.push({name:"New Pilgrim",text:"Write review here."});save(d);renderAll()};
-function renderBookings(){const bs=JSON.parse(localStorage.getItem("nurBookings")||"[]");$("#bookingAdmin").innerHTML=bs.length?bs.map(b=>`<div class="booking-card"><b>${esc(b.name)}</b> — ${esc(b.phone)}<div>${esc(b.package)} ${b.date?"• "+esc(b.date):""}</div><p>${esc(b.message||"No message")}</p><span class="muted">${esc(b.created)}</span></div>`).join(""):"<p class='muted'>No booking enquiries yet.</p>"}
-$("#clearBookings").onclick=()=>{if(confirm("Clear all bookings?")){localStorage.removeItem("nurBookings");renderAll()}};
-function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+const defaultData={settings:{name:"NUR Umrah & Hajj Travel",phone:"+880 1XXX-XXXXXX",whatsapp:"+880 1XXX-XXXXXX",email:"info@nurtravel.com",facebook:"https://www.facebook.com/share/1Ea8p2J5f5/",address:"Your office address, Dhaka, Bangladesh",about:"NUR Umrah & Hajj Travel is dedicated to helping pilgrims plan their sacred journey with confidence and care.",accent:"#d8b25f"},packages:[{name:"Economy Hajj",type:"Hajj",days:"30–45 Days",price:"৳ 5,50,000",tag:"VALUE",hotel:"Comfort Hotel",desc:"A practical Hajj plan focused on essential services and guidance."},{name:"Standard Hajj",type:"Hajj",days:"30–45 Days",price:"৳ 7,00,000",tag:"POPULAR",hotel:"4★ Hotel",desc:"A balanced Hajj package with comfortable accommodation and coordinated travel."},{name:"Premium Hajj",type:"Hajj",days:"30–45 Days",price:"৳ 9,50,000",tag:"PREMIUM",hotel:"5★ Hotel",desc:"Enhanced comfort with premium hotel and personalized support."},{name:"Economy Umrah",type:"Umrah",days:"10–14 Days",price:"৳ 1,65,000",tag:"VALUE",hotel:"3★ Hotel",desc:"A practical Umrah option for pilgrims who want essential services at a balanced price."},{name:"Standard Umrah",type:"Umrah",days:"13–14 Days",price:"৳ 2,05,000",tag:"POPULAR",hotel:"4★ Hotel",desc:"Comfortable hotels, flights, visa support and guidance for a smoother journey."},{name:"Customized Umrah",type:"Umrah",days:"Flexible",price:"Contact for price",tag:"CUSTOM",hotel:"As required",desc:"Choose your dates, hotel category, room type and service preferences."}],gallery:[{title:"Masjid al-Haram",url:"https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=1400&q=85"},{title:"Masjid an-Nabawi",url:"https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?auto=format&fit=crop&w=1000&q=85"}],reviews:[{name:"Pilgrim Review",text:"Alhamdulillah, the journey was smooth and the support was very helpful."},{name:"Family Traveller",text:"The team explained the package clearly and helped us understand the travel process."}]};
+const $=s=>document.querySelector(s);function data(){try{return JSON.parse(localStorage.getItem("nurTravelData"))||defaultData}catch(e){return defaultData}}function save(d){localStorage.setItem("nurTravelData",JSON.stringify(d))}function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function getBookings(){try{return JSON.parse(localStorage.getItem("nurBookings")||"[]")}catch(e){return[]}}const SEEN="nurSeenBookingIds";function seen(){try{return JSON.parse(localStorage.getItem(SEEN)||"[]")}catch(e){return[]}}function updateBadge(){const unseen=getBookings().filter(b=>!seen().includes(b.id)).length;$("#notifBadge").textContent=unseen>99?"99+":unseen;$("#notifBadge").classList.toggle("show",unseen>0);$("#sideBadge").textContent=unseen>99?"99+":unseen;$("#sideBadge").classList.toggle("show",unseen>0)}function markSeen(){localStorage.setItem(SEEN,JSON.stringify(getBookings().map(b=>b.id)));updateBadge()}
+function toast(title,msg){const t=$("#toast");t.innerHTML=`<b>${esc(title)}</b><span>${esc(msg)}</span>`;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),6000)}function sound(){try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=880;g.gain.setValueAtTime(.001,c.currentTime);g.gain.exponentialRampToValueAtTime(.16,c.currentTime+.03);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.35);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.4)}catch(e){}}
+async function enableNotifications(){if(!("Notification"in window)){alert("This browser does not support notifications.");return}const p=await Notification.requestPermission();if(p==="granted")toast("Notifications enabled","New demo bookings can alert you while this panel is open.");else alert("Please allow notifications for this site in Chrome settings.")}
+let lastCount=getBookings().length;function checkNew(){const bs=getBookings();if(bs.length>lastCount){const b=bs[bs.length-1];sound();toast("🔔 New Booking Received",`${b.name} — ${b.package||"Booking enquiry"}`);if("Notification"in window&&Notification.permission==="granted")new Notification("NUR Travel — New Booking",{body:`${b.name} • ${b.phone} • ${b.package||"Package enquiry"}`,icon:"../assets/logo.png"})}lastCount=bs.length;updateBadge()}
+if(sessionStorage.getItem("nurAdmin")==="1")openApp();$("#loginBtn").onclick=()=>{$("#pass").value==="admin1234"?(sessionStorage.setItem("nurAdmin","1"),openApp()):alert("Wrong password")};function openApp(){$("#login").classList.add("hidden");$("#app").classList.remove("hidden");renderAll()}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));$("#"+b.dataset.tab).classList.add("active");$("#pageTitle").textContent=b.querySelector("span")?.textContent||"Dashboard";if(b.dataset.tab==="bookings"){markSeen();renderBookings()}});$("#notifyBtn").onclick=enableNotifications;$("#reset").onclick=()=>{if(confirm("Reset all demo data?")){localStorage.removeItem("nurTravelData");localStorage.removeItem("nurBookings");localStorage.removeItem(SEEN);renderAll()}};
+function renderAll(){const d=data();$("#statPackages").textContent=d.packages.length;$("#statGallery").textContent=d.gallery.length;$("#statReviews").textContent=d.reviews.length;$("#statBookings").textContent=getBookings().length;renderSettings(d);renderPackages(d);renderGallery(d);renderReviews(d);renderBookings();updateBadge()}
+function renderSettings(d){const f=$("#settingsForm");Object.keys(d.settings).forEach(k=>{if(f[k])f[k].value=d.settings[k]});f.onsubmit=e=>{e.preventDefault();const x=data();Object.keys(x.settings).forEach(k=>{if(f[k])x.settings[k]=f[k].value});save(x);alert("Website settings saved");renderAll()}}
+function renderPackages(d){$("#packageAdmin").innerHTML=d.packages.map((p,i)=>`<div class="admin-row"><div><div class="form-grid"><input data-k="name" value="${esc(p.name)}" placeholder="Package name"><select data-k="type"><option ${p.type==="Umrah"?"selected":""}>Umrah</option><option ${p.type==="Hajj"?"selected":""}>Hajj</option></select><input data-k="days" value="${esc(p.days)}" placeholder="Duration"><input data-k="price" value="${esc(p.price)}" placeholder="Price"><input data-k="tag" value="${esc(p.tag)}" placeholder="Tag"><input data-k="hotel" value="${esc(p.hotel)}" placeholder="Hotel"></div><textarea data-k="desc" rows="3" placeholder="Description">${esc(p.desc)}</textarea></div><div class="actions"><button class="save" onclick="savePackage(${i},this)">Save</button><button class="del" onclick="delPackage(${i})">Delete</button></div></div>`).join("")}
+window.savePackage=(i,b)=>{const d=data(),r=b.closest(".admin-row");r.querySelectorAll("[data-k]").forEach(x=>d.packages[i][x.dataset.k]=x.value);save(d);renderAll()};window.delPackage=i=>{const d=data();d.packages.splice(i,1);save(d);renderAll()};$("#addPackage").onclick=()=>{const d=data();d.packages.push({name:"New Package",type:"Umrah",days:"14 Days",price:"Contact for price",tag:"NEW",hotel:"Hotel",desc:"Add package details here."});save(d);renderAll()};
+function renderGallery(d){$("#galleryAdmin").innerHTML=d.gallery.map((g,i)=>`<div class="admin-row gallery-row"><div><div class="image-preview-wrap"><img class="image-preview" src="${esc(g.url)}" alt="${esc(g.title)}" onerror="this.style.display='none'"></div><input data-g="title" value="${esc(g.title)}" placeholder="Image title"><input data-g="url" value="${esc(g.url)}" placeholder="Image URL"><input class="file-input" type="file" accept="image/*"><small class="muted">Choose a photo from your phone. Demo stores it in this browser.</small></div><div class="actions"><button class="save" onclick="saveGallery(${i},this)">Save</button><button class="del" onclick="delGallery(${i})">Delete</button></div></div>`).join("");document.querySelectorAll(".file-input").forEach(input=>input.onchange=function(){const file=this.files?.[0];if(!file)return;if(!file.type.startsWith("image/")){alert("Please choose an image.");return}if(file.size>4*1024*1024){alert("Please choose an image smaller than 4 MB for this demo.");this.value="";return}const reader=new FileReader();reader.onload=()=>{const row=this.closest(".gallery-row");row.querySelector('[data-g="url"]').value=reader.result;row.querySelector(".image-preview").src=reader.result;row.querySelector(".image-preview").style.display="block"};reader.readAsDataURL(file)})}
+window.saveGallery=(i,b)=>{const d=data(),r=b.closest(".gallery-row");r.querySelectorAll("[data-g]").forEach(x=>d.gallery[i][x.dataset.g]=x.value);save(d);renderAll()};window.delGallery=i=>{const d=data();d.gallery.splice(i,1);save(d);renderAll()};$("#addGallery").onclick=()=>{const d=data();d.gallery.push({title:"New Photo",url:""});save(d);renderAll();setTimeout(()=>document.querySelectorAll(".file-input")[document.querySelectorAll(".file-input").length-1]?.click(),100)};
+function renderReviews(d){$("#reviewAdmin").innerHTML=d.reviews.map((r,i)=>`<div class="admin-row"><div><input data-r="name" value="${esc(r.name)}" placeholder="Name"><textarea data-r="text" rows="3" placeholder="Review">${esc(r.text)}</textarea></div><div class="actions"><button class="save" onclick="saveReview(${i},this)">Save</button><button class="del" onclick="delReview(${i})">Delete</button></div></div>`).join("")};window.saveReview=(i,b)=>{const d=data(),r=b.closest(".admin-row");r.querySelectorAll("[data-r]").forEach(x=>d.reviews[i][x.dataset.r]=x.value);save(d);renderAll()};window.delReview=i=>{const d=data();d.reviews.splice(i,1);save(d);renderAll()};$("#addReview").onclick=()=>{const d=data();d.reviews.push({name:"New Pilgrim",text:"Write review here."});save(d);renderAll()};
+function renderBookings(){const bs=getBookings();$("#bookingAdmin").innerHTML=bs.length?bs.slice().reverse().map(b=>`<div class="booking-card"><b>${esc(b.name)}</b> — ${esc(b.phone)}<div>${esc(b.package)} ${b.date?"• "+esc(b.date):""}</div><p>${esc(b.message||"No message")}</p><span class="muted">${esc(b.created)}</span></div>`).join(""):"<p class='muted'>No booking enquiries yet.</p>"}$("#clearBookings").onclick=()=>{if(confirm("Clear all bookings?")){localStorage.removeItem("nurBookings");localStorage.removeItem(SEEN);renderAll()}};setInterval(checkNew,3000);updateBadge();
