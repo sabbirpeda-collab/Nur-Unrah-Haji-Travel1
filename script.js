@@ -1,53 +1,7 @@
-const defaultData={
- settings:{name:"NUR Umrah & Hajj Travel",phone:"+880 1XXX-XXXXXX",whatsapp:"+880 1XXX-XXXXXX",email:"info@nurtravel.com",address:"Your office address, Dhaka, Bangladesh",about:"NUR Umrah & Hajj Travel is dedicated to helping pilgrims plan their sacred journey with confidence. We focus on clear package information, practical travel coordination and responsive assistance.",accent:"#d9b25f"},
- packages:[
-  {name:"Economy Umrah",type:"Umrah",days:"10 Days",price:"৳ 95,000",tag:"BEST VALUE",hotel:"3★ Hotel",desc:"A practical package for budget-conscious pilgrims."},
-  {name:"Standard Umrah",type:"Umrah",days:"14 Days",price:"৳ 125,000",tag:"POPULAR",hotel:"4★ Hotel",desc:"Comfortable accommodation with balanced services."},
-  {name:"Premium Umrah",type:"Umrah",days:"21 Days",price:"৳ 185,000",tag:"PREMIUM",hotel:"5★ Hotel",desc:"Enhanced comfort and dedicated support."},
-  {name:"Economy Hajj",type:"Hajj",days:"30–45 Days",price:"৳ 5,50,000",tag:"ECONOMY",hotel:"AC Hotel",desc:"Value-focused Hajj package with essential services."},
-  {name:"Standard Hajj",type:"Hajj",days:"30–35 Days",price:"৳ 6,70,000",tag:"POPULAR",hotel:"3★ Hotel",desc:"Balanced Hajj package for comfortable group travel."},
-  {name:"Premium Hajj",type:"Hajj",days:"30–35 Days",price:"৳ 7,90,000",tag:"PREMIUM",hotel:"3★ Hotel",desc:"Premium arrangements and enhanced travel support."}
- ],
- gallery:[
-  {title:"Masjid al-Haram",url:"https://images.unsplash.com/photo-1564769625392-651b89c31e2a?auto=format&fit=crop&w=1200&q=85"},
-  {title:"Masjid an-Nabawi",url:"https://images.unsplash.com/photo-1542816417-09836776b8d8?auto=format&fit=crop&w=900&q=85"},
-  {title:"Sacred Journey",url:"https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?auto=format&fit=crop&w=900&q=85"},
-  {title:"Peace & Prayer",url:"https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=900&q=85"}
- ],
- reviews:[
-  {name:"Pilgrim Review",text:"Alhamdulillah, the journey was smooth and the support was very helpful."},
-  {name:"Family Pilgrim",text:"Clear communication and caring service from booking to return."},
-  {name:"Umrah Pilgrim",text:"A professional experience with helpful travel guidance."}
- ]};
-function getData(){try{const d=JSON.parse(localStorage.getItem("nurTravelData"));return d?d:defaultData}catch(e){return defaultData}}
-function saveData(d){localStorage.setItem("nurTravelData",JSON.stringify(d))}
-let data=getData(); saveData(data);
-document.documentElement.style.setProperty("--accent",data.settings.accent);
-const q=s=>document.querySelector(s);
-q("#year").textContent=new Date().getFullYear();
-function render(){
- data=getData();
- document.title=data.settings.name;
- q(".brand span").innerHTML=`NUR <b>Umrah & Hajj Travel</b>`;
- q("#aboutText").textContent=data.settings.about;
- q("#phoneText").textContent=data.settings.phone;q("#phoneText2").textContent=data.settings.phone;
- q("#emailText").textContent=data.settings.email;q("#emailText2").textContent=data.settings.email;
- q("#addressText").textContent=data.settings.address;q("#waText").textContent=data.settings.whatsapp;
- let wa=data.settings.whatsapp.replace(/\D/g,""); q("#waLink").href=`https://wa.me/${wa}`;
- const query=(q("#search").value||"").toLowerCase(); const type=q("#type").value;
- const list=data.packages.filter(p=>(!query||JSON.stringify(p).toLowerCase().includes(query))&&(!type||p.type===type));
- q("#packagesGrid").innerHTML=list.map((p,i)=>`<article class="package"><div class="package-top"><span class="tag">${p.tag}</span><h3>${p.name}</h3></div><div class="package-body"><p>${p.desc}</p><div class="meta"><span>⏱ ${p.days}</span><span>🏨 ${p.hotel}</span></div><div class="price">${p.price} <small>/ person*</small></div><a class="btn gold" href="#booking" data-p="${i}">Enquire Now →</a></div></article>`).join("");
- q("#bookingPackage").innerHTML=data.packages.map(p=>`<option>${p.name}</option>`).join("");
- q("#galleryGrid").innerHTML=data.gallery.map((g,i)=>`<div class="gallery-item" style="background-image:url('${g.url}')"><span>${g.title}</span></div>`).join("");
- q("#reviewsGrid").innerHTML=data.reviews.map(r=>`<article class="review"><div class="stars">★★★★★</div><p>“${r.text}”</p><b>— ${r.name}</b></article>`).join("");
- document.querySelectorAll("[data-p]").forEach(a=>a.addEventListener("click",()=>q("#bookingPackage").value=list[+a.dataset.p].name));
-}
-q("#search").addEventListener("input",render);q("#type").addEventListener("change",render);
-q(".menu").addEventListener("click",()=>q(".nav nav").classList.toggle("open"));
-document.querySelectorAll(".nav nav a").forEach(a=>a.addEventListener("click",()=>q(".nav nav").classList.remove("open")));
-q("#bookingForm").addEventListener("submit",e=>{
- e.preventDefault(); const f=new FormData(e.target); const bookings=JSON.parse(localStorage.getItem("nurBookings")||"[]");
- bookings.unshift({id:Date.now(),name:f.get("name"),phone:f.get("phone"),package:f.get("package"),date:f.get("date"),message:f.get("message"),created:new Date().toLocaleString()});
- localStorage.setItem("nurBookings",JSON.stringify(bookings)); q("#formMsg").textContent="Enquiry saved successfully. The admin can view it in the Admin Panel.";q("#formMsg").style.color="#1d714e";e.target.reset();
-});
-render();
+const defaultData={settings:{name:"NUR Umrah & Hajj Travel",phone:"+880 1XXX-XXXXXX",whatsapp:"+880 1XXX-XXXXXX",email:"info@nurtravel.com",address:"Your office address, Dhaka, Bangladesh",about:"NUR Umrah & Hajj Travel is dedicated to helping pilgrims plan their sacred journey with confidence and care.",accent:"#d8b25f"},packages:[{name:"Economy Hajj",type:"Hajj",days:"30–45 Days",price:"৳ 5,50,000",tag:"VALUE",hotel:"Comfort Hotel",desc:"A practical Hajj plan focused on essential services and guidance."},{name:"Standard Hajj",type:"Hajj",days:"30–45 Days",price:"৳ 7,00,000",tag:"POPULAR",hotel:"4★ Hotel",desc:"A balanced Hajj package with comfortable accommodation and coordinated travel."},{name:"Premium Hajj",type:"Hajj",days:"30–45 Days",price:"৳ 9,50,000",tag:"PREMIUM",hotel:"5★ Hotel",desc:"Enhanced comfort with premium hotel and personalized support."},{name:"Economy Umrah",type:"Umrah",days:"10–14 Days",price:"৳ 1,65,000",tag:"VALUE",hotel:"3★ Hotel",desc:"A practical Umrah option for pilgrims who want essential services at a balanced price."},{name:"Standard Umrah",type:"Umrah",days:"13–14 Days",price:"৳ 2,05,000",tag:"POPULAR",hotel:"4★ Hotel",desc:"Comfortable hotels, flights, visa support and guidance for a smoother journey."},{name:"Customized Umrah",type:"Umrah",days:"Flexible",price:"Contact for price",tag:"CUSTOM",hotel:"As required",desc:"Choose your dates, hotel category, room type and service preferences."}],gallery:[{title:"Masjid al-Haram",url:"https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=1400&q=85"},{title:"Masjid an-Nabawi",url:"https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?auto=format&fit=crop&w=1000&q=85"},{title:"Pilgrimage Journey",url:"https://images.unsplash.com/photo-1519817650390-64a93db511aa?auto=format&fit=crop&w=1000&q=85"},{title:"Holy Places",url:"https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1000&q=85"}],reviews:[{name:"Pilgrim Review",text:"Alhamdulillah, the journey was smooth and the support was very helpful."},{name:"Family Traveller",text:"The team explained the package clearly and helped us understand the travel process."},{name:"Umrah Pilgrim",text:"Good communication and a comfortable experience from booking to travel."}]};
+const $=s=>document.querySelector(s);function getData(){try{return JSON.parse(localStorage.getItem("nurTravelData"))||defaultData}catch(e){return defaultData}}function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}function digits(s){return String(s||"").replace(/\D/g,"")}
+function setContact(d){const s=d.settings;["brandName","footerName"].forEach(id=>{if($("#"+id))$("#"+id).textContent=s.name});$("#topPhone").textContent=s.phone;$("#topPhone").href="tel:+"+digits(s.phone);$("#bookingPhone").textContent=s.phone;$("#phone").textContent=s.phone;$("#footerPhone").textContent=s.phone;$("#footerPhone").href="tel:+"+digits(s.phone);$("#topEmail").textContent=s.email;$("#topEmail").href="mailto:"+s.email;$("#email").textContent=s.email;$("#footerEmail").textContent=s.email;$("#footerEmail").href="mailto:"+s.email;$("#address").textContent=s.address;$("#aboutText").textContent=s.about;const wa="https://wa.me/"+digits(s.whatsapp||s.phone);["heroWhatsApp","floatWhatsApp"].forEach(id=>{if($("#"+id))$("#"+id).href=wa});$("#floatCall").href="tel:+"+digits(s.phone);document.documentElement.style.setProperty("--gold",s.accent||"#d8b25f")}
+function packageCard(p,i){const imgs=["https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=1000&q=80","https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?auto=format&fit=crop&w=1000&q=80","https://images.unsplash.com/photo-1519817650390-64a93db511aa?auto=format&fit=crop&w=1000&q=80"];return `<article class="package"><div class="package-top" style="background-image:url('${imgs[i%imgs.length]}')"><span class="tag">${esc(p.tag)}</span></div><div class="package-body"><h3>${esc(p.name)}</h3><div class="package-price">${esc(p.price)}</div><div class="package-meta"><div class="meta"><b>Duration</b>${esc(p.days)}</div><div class="meta"><b>Hotel</b>${esc(p.hotel)}</div></div><p>${esc(p.desc)}</p><a class="btn primary package-book" href="#booking" data-package="${esc(p.name)}">Enquire Now →</a></div></article>`}
+function render(){const d=getData();setContact(d);const h=d.packages.filter(p=>p.type==="Hajj"),u=d.packages.filter(p=>p.type==="Umrah");$("#hajjPackages").innerHTML=h.map(packageCard).join("")||"<p>No Hajj packages added yet.</p>";$("#umrahPackages").innerHTML=u.map(packageCard).join("")||"<p>No Umrah packages added yet.</p>";$("#gallery").innerHTML=d.gallery.map((g,i)=>`<div class="gallery-item"><img src="${esc(g.url)}" alt="${esc(g.title)}"><span>${esc(g.title)}</span></div>`).join("");$("#reviewsGrid").innerHTML=d.reviews.map(r=>`<article class="review"><div class="stars">★★★★★</div><p>“${esc(r.text)}”</p><b>${esc(r.name)}</b></article>`).join("");document.querySelectorAll(".package-book").forEach(a=>a.onclick=()=>{$("#packageSelect").value=a.dataset.package});$("#year").textContent=new Date().getFullYear()}
+function saveBooking(e){e.preventDefault();const f=e.target,fd=new FormData(f);const b={id:"b"+Date.now(),name:fd.get("name"),phone:fd.get("phone"),package:fd.get("package"),date:fd.get("date"),message:fd.get("message"),created:new Date().toLocaleString()};let bs=[];try{bs=JSON.parse(localStorage.getItem("nurBookings")||"[]")}catch(_){}bs.push(b);localStorage.setItem("nurBookings",JSON.stringify(bs));$("#successModal").classList.add("show");f.reset()}
+$("#bookingForm").addEventListener("submit",saveBooking);$("#menuToggle").onclick=()=>$("#nav").classList.toggle("open");$("#closeModal").onclick=()=>$("#successModal").classList.remove("show");$("#modalOk").onclick=()=>$("#successModal").classList.remove("show");window.addEventListener("storage",render);render();

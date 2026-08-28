@@ -1,42 +1,19 @@
-# NUR Umrah & Hajj Travel — Professional Website + Admin Demo
+NUR Umrah & Hajj Travel — Professional Demo Website
 
-## Included
-- `index.html` — public website
-- `style.css` — responsive premium theme
-- `script.js` — dynamic content, packages, gallery, reviews and booking storage
-- `admin/index.html` — demo admin panel
-- `admin/admin.css`
-- `admin/admin.js`
-- `assets/logo.png` — your supplied NUR logo, processed for transparent background
+This package is a redesigned front-end demo inspired by common premium Hajj/Umrah travel-site structures: hero, Hajj/Umrah packages, services, process, gallery, reviews, FAQ, booking enquiry and contact.
 
-## Demo admin login
-Password: `admin1234`
+Branding:
+- Uses the supplied NUR logo in assets/logo.png.
+- The website does not copy another agency's logo, text, or branding.
 
-## Admin features
-- Change phone, WhatsApp, email, address, about text
-- Change accent/theme color
-- Add/edit/delete Hajj and Umrah packages
-- Add/edit/delete gallery images
-- Add/edit/delete reviews
-- View booking enquiries
-- Reset demo data
+Admin:
+- URL: /admin/
+- Demo password: admin1234
+- Edit site settings, packages, gallery, reviews and view demo bookings.
+- Gallery Add Image opens the phone image picker.
+- Browser notifications work while the admin panel is open.
 
-## Important limitation
-This admin panel uses browser `localStorage`. It is excellent for a free demo/prototype, but changes are stored only in the same browser/device. For a real business website where you can log in from any phone and changes are stored online for everyone, connect the site to a backend such as Firebase or Supabase.
-
-## Facebook page
-The supplied Facebook share URL could not be fetched reliably from the web environment, so no Facebook-specific phone/address/package information was guessed. Replace the demo contact details in Admin > Site Settings, or provide the page's direct public URL / screenshots of the About and Contact sections for exact data entry.
-
-## Run
-Open `index.html`. For GitHub Pages, upload the project files with `index.html` at repository root. The admin is at `/admin/`.
-
-
-## Gallery upload fix
-In Admin > Gallery, `+ Add Image` now opens the phone's image/file picker.
-- Select an image
-- Preview appears immediately
-- Enter/change title if needed
-- Press Save
-- The demo stores the selected image in browser localStorage as a data URL
-
-This is suitable for the free demo. For a production website, use Firebase Storage or Supabase Storage so images are stored online and available on every device.
+Important:
+- This is a static/localStorage demo. Changes are stored in the same browser/device.
+- Booking enquiries are local demo data. For real multi-device bookings and Telegram notifications, connect Supabase/Firebase and a server-side function.
+- Replace demo package prices, office address, phone, email and photos with your real business information before publishing.
